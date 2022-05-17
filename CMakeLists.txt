@@ -15,4 +15,6 @@ add_library(
 
 add_executable(student_score_linked_list main.c)
 
-target_link_libraries(student_score_linked_list database_lib user_interface_lib)
+target_link_libraries(user_interface_lib database_lib)
+
+target_link_libraries(student_score_linked_list user_interface_lib)
