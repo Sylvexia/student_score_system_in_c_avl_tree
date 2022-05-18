@@ -422,38 +422,35 @@ void destroy_score_min_heap(ScoreMinHeap *heap)
     free(heap);
 }
 
-void build_score_min_heap(ScoreMinHeap *heap)
+void heapify_score_min_heap(ScoreMinHeap *heap, int n, int i)
 {
-    for (int i = heap->size / 2 - 1; i >= 0; i--)
-    {
-        heap->index = i;
-        heapify_score_min_heap(heap);
-    }
-}
-
-void heapify_score_min_heap(ScoreMinHeap *heap)
-{
-    int i = heap->index;
+    int smallest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
 
-    if (i >= heap->size / 2)
+    if (left < n && heap->student_scores[left].score < heap->student_scores[smallest].score)
     {
-        return;
+        smallest = left;
     }
 
-    int smallest = (heap->student_scores[left].score < heap->student_scores[i].score) ? left : i;
-
-    if (right < heap->size)
+    if (right < n && heap->student_scores[right].score < heap->student_scores[smallest].score)
     {
-        smallest = (heap->student_scores[right].score < heap->student_scores[smallest].score) ? right : smallest;
+        smallest = right;
     }
+
     if (smallest != i)
     {
-        // swap(&heap->student_scores[i].score, &heap->student_scores[smallest].score);
-        swap_student_score(&heap->student_scores[i], &heap->student_scores[smallest]);
-        heap->index = smallest;
-        heapify_score_min_heap(heap);
+        // swap_student_score(&heap->student_scores[i], &heap->student_scores[smallest]);
+        double temp;
+        char temp_id[11];
+        temp = heap->student_scores[smallest].score;
+        heap->student_scores[smallest].score = heap->student_scores[i].score;
+        heap->student_scores[i].score = temp;
+        strcpy(temp_id, heap->student_scores[smallest].student_id);
+        strcpy(heap->student_scores[smallest].student_id, heap->student_scores[i].student_id);
+        strcpy(heap->student_scores[i].student_id, temp_id);
+
+        heapify_score_min_heap(heap, n, smallest);
     }
 }
 
@@ -511,20 +508,33 @@ void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
 
 void print_score_min_heap_k(ScoreMinHeap *heap, int k)
 {
-    for (int i = k; i < heap->size; i++)
+    for (int i = (heap->size) / 2 - 1; i >= 0; i--)
     {
-        if (heap->student_scores[0].score > heap->student_scores[i].score)
-        {
-            continue;
-        }
-        else
-        {
-            // heap->student_scores[0].score = heap->student_scores[i].score;
-            assign_student_score(&heap->student_scores[0], &heap->student_scores[i]);
-            heap->index = 0;
-            heapify_score_min_heap(heap);
-        }
+        heapify_score_min_heap(heap, heap->size, i);
     }
+
+    for (int i = heap->size - 1; i >= 0; i--)
+    {
+        double temp;
+        char temp_id[11];
+        //swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
+        temp = heap->student_scores[0].score;
+        heap->student_scores[0].score = heap->student_scores[i].score;
+        heap->student_scores[i].score = temp;
+        strcpy(temp_id, heap->student_scores[0].student_id);
+        strcpy(heap->student_scores[0].student_id, heap->student_scores[i].student_id);
+        strcpy(heap->student_scores[i].student_id, temp_id);
+        heapify_score_min_heap(heap, i, 0);
+    }
+
+    // for (int i = k; i < heap->size; i++)
+    // {
+    //     if (heap->student_scores[0].score <= heap->student_scores[i].score)
+    //     {
+    //         heap->student_scores[0].score = heap->student_scores[i].score;
+    //         heapify_score_min_heap(heap, heap->size, 0);
+    //     }
+    // }
 
     for (int i = 0; i < k; i++)
     {

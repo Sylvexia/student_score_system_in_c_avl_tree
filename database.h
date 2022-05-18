@@ -75,19 +75,18 @@ typedef struct student_score
 typedef struct score_min_heap
 {
     int size;
-    int index;//iterate num
+    int index;                    // iterate num
     StudentScore *student_scores; // array of student scores
 } ScoreMinHeap;
 
 ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void destroy_score_min_heap(ScoreMinHeap *heap);
-void build_score_min_heap(ScoreMinHeap *heap);
-void heapify_score_min_heap(ScoreMinHeap *heap);
+void heapify_score_min_heap(ScoreMinHeap *heap, int n, int i);
 void get_english_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_math_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_science_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
-void print_score_min_heap_k(ScoreMinHeap *heap, int k);//k largest
+void print_score_min_heap_k(ScoreMinHeap *heap, int k); // k largest
 void print_score_min_heap(ScoreMinHeap *heap);
 
 void swap_student_score(StudentScore *a, StudentScore *b);

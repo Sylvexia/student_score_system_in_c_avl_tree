@@ -172,7 +172,6 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
         get_science_score_min_heap(heap, student_node);
         break;
     }
-    print_score_min_heap(heap);
     print_score_min_heap_k(heap, 10);
 
     destroy_score_min_heap(heap);
@@ -183,7 +182,6 @@ void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
 {
     ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
     get_total_score_min_heap(heap, student_node);
-    build_score_min_heap(heap);
     print_score_min_heap_k(heap, 10);
 
     destroy_score_min_heap(heap);
