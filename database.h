@@ -10,7 +10,8 @@ typedef enum subject
 {
     ENGLISH = 1,
     MATH = 2,
-    SCIENCE = 3
+    SCIENCE = 3,
+    TOTAL = 4
 } Subject;
 
 typedef struct scores
@@ -23,7 +24,7 @@ typedef struct scores
 // struct for student
 typedef struct student
 {
-    char student_id[STUDENT_ID_LENGTH+1];
+    char student_id[STUDENT_ID_LENGTH + 1];
     Scores score;
 } Student;
 
@@ -41,7 +42,9 @@ StudentNode *insert_student_node(StudentNode *node, Student *student);
 StudentNode *delete_student_node(StudentNode *node, char *student_id);
 StudentNode *search_student_node(StudentNode *node, char *student_id);
 void print_student_ranks(StudentNode *node, Student *student);
+void print_top_k_score(StudentNode *node, int k, int subject_id);
 void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int *english_rank, int *math_rank, int *science_rank);
+void get_top_k_score(StudentNode *node, int k, int subject_id, double score[], char *id[STUDENT_ID_LENGTH + 1]);
 void destroy_student_node(StudentNode *node);
 void print_student_node_inorder(StudentNode *node);
 StudentNode *load_student_node_from_csv(StudentNode *node, char *file_name);

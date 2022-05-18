@@ -126,7 +126,6 @@ StudentNode *feature_load_from_csv(StudentNode *student_node)
 void feature_log_student_data_by_id(StudentNode *student_node)
 {
     print_student_node_inorder(student_node);
-
     return;
 }
 
@@ -149,13 +148,26 @@ void feature_search_by_id_evaluate(StudentNode *student_node)
 
 void feature_search_top_ten_score_by_subject(StudentNode *student_node)
 {
-    printf("top ten score by specific subject\n");
+    Subject subject = 0;
+    int subject_id = (int)subject;
+    printf("insert subject number");
+    scanf("%d", subject_id);
+    
+    switch (subject_id)
+    {
+    case ENGLISH:
+        
+        break;
+    
+    default:
+        break;
+    }
     return;
 }
 
 void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
 {
-    printf("top ten score by total score\n");
+    
     return;
 }
 

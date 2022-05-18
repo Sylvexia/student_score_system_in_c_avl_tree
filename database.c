@@ -158,6 +158,15 @@ void print_student_ranks(StudentNode *node, Student *student)
     printf("total rank: %d, english_rank: %d, math_rank: %d, science_rank: %d\n", total_rank, english_rank, math_rank, science_rank);
 }
 
+void print_top_k_score(StudentNode *node, int k, int subject_id)
+{
+    double *score = malloc(sizeof(double) * k);
+    char *id[STUDENT_ID_LENGTH + 1] = malloc(sizeof(char[11]) * k);
+    get_top_k_score(node, k, subject_id, score, id);
+
+    free(score);
+}
+
 void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int *english_rank, int *math_rank, int *science_rank)
 {
     if (node == NULL)
@@ -168,26 +177,29 @@ void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int
     double student_total_score = student->score.english + student->score.math + student->score.science;
     double node_total_score = node->student->score.english + node->student->score.math + node->student->score.science;
 
-    if(student->score.english > node->student->score.english)
+    if (student->score.english > node->student->score.english)
     {
         *english_rank += 1;
     }
-    if(student->score.math > node->student->score.math)
+    if (student->score.math > node->student->score.math)
     {
         *math_rank += 1;
     }
-    if(student->score.science > node->student->score.science)
+    if (student->score.science > node->student->score.science)
     {
         *science_rank += 1;
     }
-    if(student_total_score > node_total_score)
+    if (student_total_score > node_total_score)
     {
         *total_rank += 1;
     }
 
     get_student_ranks(node->left, student, total_rank, english_rank, math_rank, science_rank);
     get_student_ranks(node->right, student, total_rank, english_rank, math_rank, science_rank);
+}
 
+void get_top_k_score(StudentNode *node, int k, int subject_id, double score[], char *id[STUDENT_ID_LENGTH + 1])
+{
 }
 
 void destroy_student_node(StudentNode *node)
@@ -331,7 +343,7 @@ void print_student(Student *student)
 }
 
 void print_student_evaluate(StudentNode *node, Student *student)
-{   
+{
     print_student(student);
     printf("total: %lf\n", student->score.english + student->score.math + student->score.science);
     printf("average: %lf\n", (student->score.english + student->score.math + student->score.science) / 3.0);
