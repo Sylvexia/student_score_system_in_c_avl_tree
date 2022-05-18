@@ -1,5 +1,5 @@
 #include "database.h"
-//ref: https://www.programiz.com/dsa/avl-tree
+// ref: https://www.programiz.com/dsa/avl-tree
 
 StudentNode *create_student_node(Student *new_student)
 {
@@ -29,7 +29,7 @@ StudentNode *insert_student_node(StudentNode *node, Student *student)
     }
     else
     {
-        //overwrite
+        // overwrite
         printf("overwrite at id: %s\n", student->student_id);
         node->student = create_student(student->student_id, student->score.english, student->score.math, student->score.science);
     }
@@ -158,15 +158,6 @@ void print_student_ranks(StudentNode *node, Student *student)
     printf("total rank: %d, english_rank: %d, math_rank: %d, science_rank: %d\n", total_rank, english_rank, math_rank, science_rank);
 }
 
-void print_top_k_score(StudentNode *node, int k, int subject_id)
-{
-    double *score = malloc(sizeof(double) * k);
-    char *id[STUDENT_ID_LENGTH + 1] = malloc(sizeof(char[11]) * k);
-    get_top_k_score(node, k, subject_id, score, id);
-
-    free(score);
-}
-
 void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int *english_rank, int *math_rank, int *science_rank)
 {
     if (node == NULL)
@@ -196,10 +187,6 @@ void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int
 
     get_student_ranks(node->left, student, total_rank, english_rank, math_rank, science_rank);
     get_student_ranks(node->right, student, total_rank, english_rank, math_rank, science_rank);
-}
-
-void get_top_k_score(StudentNode *node, int k, int subject_id, double score[], char *id[STUDENT_ID_LENGTH + 1])
-{
 }
 
 void destroy_student_node(StudentNode *node)
@@ -238,13 +225,17 @@ StudentNode *load_student_node_from_csv(StudentNode *node, char *filename)
     while (fgets(line, sizeof(line), fp))
     {
         char *token = strtok(line, ",");
+        if (token[0] != 'K')
+        {
+            continue;
+        }
         char *student_id = token;
         token = strtok(NULL, ",");
-        int english = atoi(token);
+        double english = atof(token);
         token = strtok(NULL, ",");
-        int math = atoi(token);
+        double math = atof(token);
         token = strtok(NULL, ",");
-        int science = atoi(token);
+        double science = atof(token);
         Student *student = create_student(student_id, english, math, science);
         node = insert_student_node(node, student);
     }
@@ -319,9 +310,75 @@ int get_size(StudentNode *node)
     return get_size(node->left) + get_size(node->right) + 1;
 }
 
+void get_english_score_array(StudentNode *node, double *english_array, int *index)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_english_score_array(node->left, english_array, index);
+    english_array[*index] = node->student->score.english;
+    *index += 1;
+    get_english_score_array(node->right, english_array, index);
+}
+
+void get_math_score_array(StudentNode *node, double *math_array, int *index)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_math_score_array(node->left, math_array, index);
+    math_array[*index] = node->student->score.math;
+    *index += 1;
+    get_math_score_array(node->right, math_array, index);
+}
+
+void get_science_score_array(StudentNode *node, double *science_array, int *index)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_science_score_array(node->left, science_array, index);
+    science_array[*index] = node->student->score.science;
+    *index += 1;
+    get_science_score_array(node->right, science_array, index);
+}
+
+void get_total_score_array(StudentNode *node, double *total_array, int *index)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_total_score_array(node->left, total_array, index);
+    total_array[*index] = node->student->score.english + node->student->score.math + node->student->score.science;
+    *index += 1;
+    get_total_score_array(node->right, total_array, index);
+}
+
+void create_score_array(double *array, int *index, int size)
+{
+    array = malloc(sizeof(double) * size);
+    *index = 0;
+}
+
+void destroy_score_array(double *array)
+{
+    free(array);
+}
+
 int max(int a, int b)
 {
     return (a > b) ? a : b;
+}
+
+void swap(double *a, double *b)
+{
+    double temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
 Student *create_student(char *student_id, double english, double math, double science)
@@ -348,4 +405,150 @@ void print_student_evaluate(StudentNode *node, Student *student)
     printf("total: %lf\n", student->score.english + student->score.math + student->score.science);
     printf("average: %lf\n", (student->score.english + student->score.math + student->score.science) / 3.0);
     print_student_ranks(node, student);
+}
+
+ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
+{
+    heap = malloc(sizeof(ScoreMinHeap));
+    heap->size = get_size(node);
+    heap->index = 0;
+    heap->student_scores = (StudentScore *)malloc(sizeof(StudentScore) * heap->size);
+    return heap;
+}
+
+void destroy_score_min_heap(ScoreMinHeap *heap)
+{
+    free(heap->student_scores);
+    free(heap);
+}
+
+void build_score_min_heap(ScoreMinHeap *heap)
+{
+    for (int i = heap->size / 2 - 1; i >= 0; i--)
+    {
+        heap->index = i;
+        heapify_score_min_heap(heap);
+    }
+}
+
+void heapify_score_min_heap(ScoreMinHeap *heap)
+{
+    int i = heap->index;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (i >= heap->size / 2)
+    {
+        return;
+    }
+
+    int smallest = (heap->student_scores[left].score < heap->student_scores[i].score) ? left : i;
+
+    if (right < heap->size)
+    {
+        smallest = (heap->student_scores[right].score < heap->student_scores[smallest].score) ? right : smallest;
+    }
+    if (smallest != i)
+    {
+        // swap(&heap->student_scores[i].score, &heap->student_scores[smallest].score);
+        swap_student_score(&heap->student_scores[i], &heap->student_scores[smallest]);
+        heap->index = smallest;
+        heapify_score_min_heap(heap);
+    }
+}
+
+void get_english_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_english_score_min_heap(heap, node->left);
+    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
+    heap->student_scores[heap->index].score = node->student->score.english;
+    heap->index += 1;
+    get_english_score_min_heap(heap, node->right);
+}
+
+void get_math_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_math_score_min_heap(heap, node->left);
+    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
+    heap->student_scores[heap->index].score = node->student->score.math;
+    heap->index += 1;
+    get_math_score_min_heap(heap, node->right);
+}
+
+void get_science_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_science_score_min_heap(heap, node->left);
+    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
+    heap->student_scores[heap->index].score = node->student->score.science;
+    heap->index += 1;
+    get_science_score_min_heap(heap, node->right);
+}
+
+void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    get_total_score_min_heap(heap, node->left);
+    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
+    heap->student_scores[heap->index].score = node->student->score.english + node->student->score.math + node->student->score.science;
+    heap->index += 1;
+    get_total_score_min_heap(heap, node->right);
+}
+
+void print_score_min_heap_k(ScoreMinHeap *heap, int k)
+{
+    for (int i = k; i < heap->size; i++)
+    {
+        if (heap->student_scores[0].score > heap->student_scores[i].score)
+        {
+            continue;
+        }
+        else
+        {
+            // heap->student_scores[0].score = heap->student_scores[i].score;
+            swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
+            heap->index = 0;
+            heapify_score_min_heap(heap);
+        }
+    }
+
+    for (int i = 0; i < k; i++)
+    {
+        printf("%s %lf\n", heap->student_scores[i].student_id, heap->student_scores[i].score);
+    }
+}
+
+void print_score_min_heap(ScoreMinHeap *heap)
+{
+    for (int i = 0; i < heap->size; i++)
+    {
+        printf("%s %lf\n", heap->student_scores[i].student_id, heap->student_scores[i].score);
+    }
+}
+
+void swap_student_score(StudentScore *a, StudentScore *b)
+{
+    StudentScore *temp = a;
+    assign_student_score(a, b);
+    assign_student_score(b, temp);
+}
+
+void assign_student_score(StudentScore *a, StudentScore *b)
+{
+    a->score = b->score;
+    strcpy(a->student_id, b->student_id);
 }

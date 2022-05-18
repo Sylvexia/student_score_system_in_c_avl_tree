@@ -150,24 +150,43 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
 {
     Subject subject = 0;
     int subject_id = (int)subject;
-    printf("insert subject number");
-    scanf("%d", subject_id);
-    
+    printf("insert subject number\n");
+    printf("1. english\n");
+    printf("2. math\n");
+    printf("3. science\n");
+    scanf("%d", &subject_id);
+
+    ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
+
     switch (subject_id)
     {
     case ENGLISH:
-        
+        get_english_score_min_heap(heap, student_node);
         break;
-    
-    default:
+
+    case MATH:
+        get_math_score_min_heap(heap, student_node);
+        break;
+
+    case SCIENCE:
+        get_science_score_min_heap(heap, student_node);
         break;
     }
+    print_score_min_heap(heap);
+    print_score_min_heap_k(heap, 10);
+
+    destroy_score_min_heap(heap);
     return;
 }
 
 void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
 {
-    
+    ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
+    get_total_score_min_heap(heap, student_node);
+    build_score_min_heap(heap);
+    print_score_min_heap_k(heap, 10);
+
+    destroy_score_min_heap(heap);
     return;
 }
 

@@ -11,7 +11,6 @@ typedef enum subject
     ENGLISH = 1,
     MATH = 2,
     SCIENCE = 3,
-    TOTAL = 4
 } Subject;
 
 typedef struct scores
@@ -28,7 +27,7 @@ typedef struct student
     Scores score;
 } Student;
 
-//student avl tree
+// student avl tree
 typedef struct student_node
 {
     Student *student;
@@ -42,9 +41,7 @@ StudentNode *insert_student_node(StudentNode *node, Student *student);
 StudentNode *delete_student_node(StudentNode *node, char *student_id);
 StudentNode *search_student_node(StudentNode *node, char *student_id);
 void print_student_ranks(StudentNode *node, Student *student);
-void print_top_k_score(StudentNode *node, int k, int subject_id);
 void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int *english_rank, int *math_rank, int *science_rank);
-void get_top_k_score(StudentNode *node, int k, int subject_id, double score[], char *id[STUDENT_ID_LENGTH + 1]);
 void destroy_student_node(StudentNode *node);
 void print_student_node_inorder(StudentNode *node);
 StudentNode *load_student_node_from_csv(StudentNode *node, char *file_name);
@@ -56,8 +53,42 @@ StudentNode *get_min_node(StudentNode *root);
 int get_height(StudentNode *root);
 int get_balance(StudentNode *root);
 int get_size(StudentNode *root);
+void get_math_score_array(StudentNode *node, double *math_array, int *index);
+void get_english_score_array(StudentNode *node, double *english_array, int *index);
+void get_science_score_array(StudentNode *node, double *science_array, int *index);
+void get_total_score_array(StudentNode *node, double *total_array, int *index);
+void create_score_array(double *array, int *index, int size);
+void destroy_score_array(double *array);
 int max(int a, int b);
+void swap(double *a, double *b);
 
 Student *create_student(char *student_id, double english, double math, double science);
 void print_student(Student *student);
 void print_student_evaluate(StudentNode *node, Student *student);
+
+typedef struct student_score
+{
+    char student_id[STUDENT_ID_LENGTH + 1];
+    double score;
+} StudentScore;
+
+typedef struct score_min_heap
+{
+    int size;
+    int index;//iterate num
+    StudentScore *student_scores; // array of student scores
+} ScoreMinHeap;
+
+ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
+void destroy_score_min_heap(ScoreMinHeap *heap);
+void build_score_min_heap(ScoreMinHeap *heap);
+void heapify_score_min_heap(ScoreMinHeap *heap);
+void get_english_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
+void get_math_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
+void get_science_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
+void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
+void print_score_min_heap_k(ScoreMinHeap *heap, int k);//k largest
+void print_score_min_heap(ScoreMinHeap *heap);
+
+void swap_student_score(StudentScore *a, StudentScore *b);
+void assign_student_score(StudentScore *a, StudentScore *b);
