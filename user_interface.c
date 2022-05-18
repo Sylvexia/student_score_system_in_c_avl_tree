@@ -69,6 +69,7 @@ void user_interface()
             printf("input error\n");
             break;
         }
+        printf("current data size: %d\n", get_size(student_node));
     }
 }
 
@@ -242,9 +243,9 @@ StudentNode *feature_add_rand_data(StudentNode *student_node)
 
         student_id[STUDENT_ID_LENGTH] = '\0';
 
-        english = rand() % 1000000 / 1000.0;
-        math = rand() % 1000000 / 1000.0;
-        science = rand() % 1000000 / 1000.0;
+        english = rand() % 1000 + rand() % 1000 / 1000.0;
+        math = rand() % 1000 + rand() % 1000 / 1000.0;
+        science = rand() % 1000 + rand() % 1000 / 1000.0;
         student_node = insert_student_node(student_node, create_student(student_id, english, math, science));
     }
     return student_node;

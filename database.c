@@ -30,7 +30,7 @@ StudentNode *insert_student_node(StudentNode *node, Student *student)
     else
     {
         // overwrite
-        //printf("overwrite at id: %s\n", student->student_id);
+        // printf("overwrite at id: %s\n", student->student_id);
         node->student = create_student(student->student_id, student->score.english, student->score.math, student->score.science);
     }
 
@@ -151,7 +151,7 @@ StudentNode *search_student_node(StudentNode *node, char *student_id)
 
 void print_student_ranks(StudentNode *node, Student *student)
 {
-    int total_rank, english_rank, math_rank, science_rank = 1;
+    int total_rank = 1, english_rank = 1, math_rank = 1, science_rank = 1;
 
     get_student_ranks(node, student, &total_rank, &english_rank, &math_rank, &science_rank);
 
@@ -168,19 +168,19 @@ void get_student_ranks(StudentNode *node, Student *student, int *total_rank, int
     double student_total_score = student->score.english + student->score.math + student->score.science;
     double node_total_score = node->student->score.english + node->student->score.math + node->student->score.science;
 
-    if (student->score.english > node->student->score.english)
+    if (student->score.english < node->student->score.english)
     {
         *english_rank += 1;
     }
-    if (student->score.math > node->student->score.math)
+    if (student->score.math < node->student->score.math)
     {
         *math_rank += 1;
     }
-    if (student->score.science > node->student->score.science)
+    if (student->score.science < node->student->score.science)
     {
         *science_rank += 1;
     }
-    if (student_total_score > node_total_score)
+    if (student_total_score < node_total_score)
     {
         *total_rank += 1;
     }

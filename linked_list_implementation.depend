@@ -22,3 +22,26 @@
 	<stdlib.h>
 	<string.h>
 
+1652839985 source:c:\users\sylvex\data_strcture_1\student_score_tree\database.c
+	"database.h"
+
+1652838673 c:\users\sylvex\data_strcture_1\student_score_tree\database.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1652838673 source:c:\users\sylvex\data_strcture_1\student_score_tree\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"user_interface.h"
+
+1652838673 c:\users\sylvex\data_strcture_1\student_score_tree\user_interface.h
+	<stdlib.h>
+	<stdio.h>
+	"database.h"
+
+1652840377 source:c:\users\sylvex\data_strcture_1\student_score_tree\user_interface.c
+	"user_interface.h"
+	<time.h>
+
