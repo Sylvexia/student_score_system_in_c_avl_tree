@@ -1,5 +1,7 @@
 #include "user_interface.h"
 
+#include <time.h>
+
 void print_manual()
 {
     printf("input the number according to the feature:\n");
@@ -58,7 +60,7 @@ void user_interface()
 
             /// debug features
         case INSERT_RAND_DATA:
-            feature_add_rand_data(student_node);
+            student_node = feature_add_rand_data(student_node);
             break;
         case SAVE_CSV:
             feature_save_csv(student_node);
@@ -220,14 +222,45 @@ StudentNode *feature_add_delete_student_data(StudentNode *student_node)
     return student_node;
 }
 
-void feature_add_rand_data(StudentNode *student_node)
+StudentNode *feature_add_rand_data(StudentNode *student_node)
 {
-    printf("add rand data\n");
-    return;
+    int n = 0;
+    printf("input number of random student data: \n");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++)
+    {
+        char student_id[STUDENT_ID_LENGTH + 1];
+        double english, math, science = 0;
+        // generate id : KXXXXXXXXX
+        student_id[0] = 'K';
+
+        for (int j = 1; j < STUDENT_ID_LENGTH; j++)
+        {
+            student_id[j] = rand() % 10 + '0';
+        }
+
+        student_id[STUDENT_ID_LENGTH] = '\0';
+
+        english = rand() % 1000000 / 1000.0;
+        math = rand() % 1000000 / 1000.0;
+        science = rand() % 1000000 / 1000.0;
+        student_node = insert_student_node(student_node, create_student(student_id, english, math, science));
+    }
+    return student_node;
 }
 
 void feature_save_csv(StudentNode *student_node)
 {
-    printf("save csv\n");
+    char file_name[FILE_NAME_LENGTH];
+    // current time as file name
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    strftime(file_name, sizeof(file_name), "%Y%m%d%H%M%S.csv", &tm);
+
+    printf("save file name: %s\n", file_name);
+    save_student_node_to_csv(student_node, file_name);
+    printf("save complete\n");
+
     return;
 }

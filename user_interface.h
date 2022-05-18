@@ -34,5 +34,5 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node);
 void feature_search_top_ten_score_by_total_score(StudentNode *student_node);
 StudentNode *feature_add_delete_student_data(StudentNode *student_node);
 
-void feature_add_rand_data(StudentNode *student_node);
+StudentNode *feature_add_rand_data(StudentNode *student_node);
 void feature_save_csv(StudentNode *student_node);

@@ -46,6 +46,7 @@ void destroy_student_node(StudentNode *node);
 void print_student_node_inorder(StudentNode *node);
 StudentNode *load_student_node_from_csv(StudentNode *node, char *file_name);
 void save_student_node_to_csv(StudentNode *node, char *file_name);
+void save_student_node_to_csv_recursive(StudentNode *node, FILE *fp);
 
 StudentNode *right_rotate(StudentNode *root);
 StudentNode *left_rotate(StudentNode *root);

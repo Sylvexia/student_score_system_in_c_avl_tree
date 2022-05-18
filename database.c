@@ -30,7 +30,7 @@ StudentNode *insert_student_node(StudentNode *node, Student *student)
     else
     {
         // overwrite
-        printf("overwrite at id: %s\n", student->student_id);
+        //printf("overwrite at id: %s\n", student->student_id);
         node->student = create_student(student->student_id, student->score.english, student->score.math, student->score.science);
     }
 
@@ -240,6 +240,30 @@ StudentNode *load_student_node_from_csv(StudentNode *node, char *filename)
         node = insert_student_node(node, student);
     }
     return node;
+}
+
+void save_student_node_to_csv(StudentNode *node, char *filename)
+{
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL)
+    {
+        printf("file not found\n");
+        return;
+    }
+
+    save_student_node_to_csv_recursive(node, fp);
+    fclose(fp);
+}
+
+void save_student_node_to_csv_recursive(StudentNode *node, FILE *fp)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    save_student_node_to_csv_recursive(node->right, fp);
+    save_student_node_to_csv_recursive(node->left, fp);
+    fprintf(fp, "%s,%f,%f,%f\n", node->student->student_id, node->student->score.english, node->student->score.math, node->student->score.science);
 }
 
 StudentNode *right_rotate(StudentNode *root)
@@ -517,7 +541,7 @@ void print_score_min_heap_k(ScoreMinHeap *heap, int k)
     {
         double temp;
         char temp_id[11];
-        //swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
+        // swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
         temp = heap->student_scores[0].score;
         heap->student_scores[0].score = heap->student_scores[i].score;
         heap->student_scores[i].score = temp;
