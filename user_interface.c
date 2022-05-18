@@ -212,6 +212,7 @@ StudentNode *feature_add_delete_student_data(StudentNode *student_node)
     case 2:
         user_insert_student_id(student_id);
         student_node = delete_student_node(student_node, student_id);
+        break;
 
     default:
         printf("input error\n");

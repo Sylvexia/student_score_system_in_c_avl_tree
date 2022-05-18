@@ -520,7 +520,7 @@ void print_score_min_heap_k(ScoreMinHeap *heap, int k)
         else
         {
             // heap->student_scores[0].score = heap->student_scores[i].score;
-            swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
+            assign_student_score(&heap->student_scores[0], &heap->student_scores[i]);
             heap->index = 0;
             heapify_score_min_heap(heap);
         }
