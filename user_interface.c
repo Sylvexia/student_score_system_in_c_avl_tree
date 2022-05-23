@@ -27,6 +27,7 @@ void user_interface()
         enum FEATURES feature = 0;
         int feature_id = (int)feature;
 
+        printf("memory allocated: %f MB\n", (double)get_size(student_node) * sizeof(student_node) / 1048576);
         print_manual();
         scanf("%d", &feature_id);
 
@@ -58,7 +59,7 @@ void user_interface()
             destroy_student_node(student_node);
             break;
 
-            /// debug features
+            // debug features
         case INSERT_RAND_DATA:
             student_node = feature_add_rand_data(student_node);
             break;
@@ -69,7 +70,6 @@ void user_interface()
             printf("input error\n");
             break;
         }
-        printf("current data size: %d\n", get_size(student_node));
     }
 }
 
@@ -109,8 +109,15 @@ StudentNode *feature_insert_student_data(StudentNode *student_node)
     user_insert_student_id(student_id);
     user_insert_student_score(&english, &math, &science);
 
+    // start time
+    clock_t start = clock();
+
     Student *new_student = create_student(student_id, english, math, science);
     student_node = insert_student_node(student_node, new_student);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
 
     return student_node;
 }
@@ -121,14 +128,29 @@ StudentNode *feature_load_from_csv(StudentNode *student_node)
 
     user_insert_file_name(file_name);
 
+    // start time
+    clock_t start = clock();
+
     student_node = load_student_node_from_csv(student_node, file_name);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
 
     return student_node;
 }
 
 void feature_log_student_data_by_id(StudentNode *student_node)
 {
+    // start time
+    clock_t start = clock();
+
     print_student_node_inorder(student_node);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return;
 }
 
@@ -136,6 +158,9 @@ void feature_search_by_id_evaluate(StudentNode *student_node)
 {
     char student_id[STUDENT_ID_LENGTH + 1];
     user_insert_student_id(student_id);
+
+    // start time
+    clock_t start = clock();
 
     StudentNode *target_node = search_student_node(student_node, student_id);
     if (target_node == NULL)
@@ -145,6 +170,10 @@ void feature_search_by_id_evaluate(StudentNode *student_node)
     }
 
     print_student_evaluate(student_node, target_node->student);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
 
     return;
 }
@@ -158,6 +187,9 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
     printf("2. math\n");
     printf("3. science\n");
     scanf("%d", &subject_id);
+
+    // start time
+    clock_t start = clock();
 
     ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
 
@@ -178,16 +210,29 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
     print_score_min_heap_k(heap, 10);
 
     destroy_score_min_heap(heap);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return;
 }
 
 void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
 {
+    // start time
+    clock_t start = clock();
+
     ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
     get_total_score_min_heap(heap, student_node);
     print_score_min_heap_k(heap, 10);
 
     destroy_score_min_heap(heap);
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return;
 }
 
@@ -205,16 +250,35 @@ StudentNode *feature_add_delete_student_data(StudentNode *student_node)
     switch (choice)
     {
     case 1:
+    {
         user_insert_student_id(student_id);
         user_insert_student_score(&english, &math, &science);
+
+        // start time
+        clock_t start = clock();
+
         student_node = insert_student_node(student_node, create_student(student_id, english, math, science));
-        break;
 
+        // end time
+        clock_t end = clock();
+        printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
+        break;
+    }
     case 2:
+    {
         user_insert_student_id(student_id);
-        student_node = delete_student_node(student_node, student_id);
-        break;
 
+        // start time
+        clock_t start = clock();
+        student_node = delete_student_node(student_node, student_id);
+
+        // end time
+        clock_t end = clock();
+        printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
+        break;
+    }
     default:
         printf("input error\n");
         break;
@@ -228,6 +292,9 @@ StudentNode *feature_add_rand_data(StudentNode *student_node)
     int n = 0;
     printf("input number of random student data: \n");
     scanf("%d", &n);
+
+    // start time
+    clock_t start = clock();
 
     for (int i = 0; i < n; i++)
     {
@@ -248,6 +315,11 @@ StudentNode *feature_add_rand_data(StudentNode *student_node)
         science = rand() % 1000 + rand() % 1000 / 1000.0;
         student_node = insert_student_node(student_node, create_student(student_id, english, math, science));
     }
+
+    // end time
+    clock_t end = clock();
+    printf("elapsed seconds: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return student_node;
 }
 
