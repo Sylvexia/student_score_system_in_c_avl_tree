@@ -29,8 +29,9 @@ StudentNode *insert_student_node(StudentNode *node, Student *student)
     }
     else
     {
-        // overwrite
-        // printf("overwrite at id: %s\n", student->student_id);
+        printf("Student ID %s already exists.\n", student->student_id);
+        printf("The score was: %.3f, %.3f, %.3f\n", node->student->score.english, node->student->score.english, node->student->score.english);
+        printf("Overwriting existing data.\n");
         node->student = create_student(student->student_id, student->score.english, student->score.math, student->score.science);
     }
 
@@ -446,18 +447,18 @@ void destroy_score_min_heap(ScoreMinHeap *heap)
     free(heap);
 }
 
-void heapify_score_min_heap(ScoreMinHeap *heap, int n, int i)
+void heapify_score_min_heap(ScoreMinHeap *heap, int k, int i)
 {
     int smallest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
 
-    if (left < n && heap->student_scores[left].score < heap->student_scores[smallest].score)
+    if (left < k && heap->student_scores[left].score < heap->student_scores[smallest].score)
     {
         smallest = left;
     }
 
-    if (right < n && heap->student_scores[right].score < heap->student_scores[smallest].score)
+    if (right < k && heap->student_scores[right].score < heap->student_scores[smallest].score)
     {
         smallest = right;
     }
@@ -474,7 +475,7 @@ void heapify_score_min_heap(ScoreMinHeap *heap, int n, int i)
         strcpy(heap->student_scores[smallest].student_id, heap->student_scores[i].student_id);
         strcpy(heap->student_scores[i].student_id, temp_id);
 
-        heapify_score_min_heap(heap, n, smallest);
+        heapify_score_min_heap(heap, k, smallest);
     }
 }
 
@@ -541,7 +542,6 @@ void print_score_min_heap_k(ScoreMinHeap *heap, int k)
     {
         double temp;
         char temp_id[11];
-        // swap_student_score(&heap->student_scores[0], &heap->student_scores[i]);
         temp = heap->student_scores[0].score;
         heap->student_scores[0].score = heap->student_scores[i].score;
         heap->student_scores[i].score = temp;
