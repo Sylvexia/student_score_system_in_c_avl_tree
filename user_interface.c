@@ -192,6 +192,7 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
     clock_t start = clock();
 
     ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
+    //ScoreMinHeap *heap = create_score_min_heap_k(heap, 10);
 
     switch (subject_id)
     {
@@ -223,9 +224,12 @@ void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
     // start time
     clock_t start = clock();
 
-    ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
-    get_total_score_min_heap(heap, student_node);
-    print_score_min_heap_k(heap, 10);
+    //ScoreMinHeap *heap = create_score_min_heap(heap, student_node);
+    ScoreMinHeap *heap = create_score_min_heap_k(heap, 10);
+    //get_total_score_min_heap(heap, student_node);
+    get_total_score_min_heap_k(heap, student_node);
+    print_score_min_heap(heap);
+    //print_score_min_heap_k(heap, 10);
 
     destroy_score_min_heap(heap);
 
