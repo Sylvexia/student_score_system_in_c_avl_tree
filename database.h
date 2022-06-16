@@ -38,6 +38,7 @@ typedef struct student_node
 
 StudentNode *create_student_node(Student *student);
 StudentNode *insert_student_node(StudentNode *node, Student *student);
+StudentNode *insert_student_node_with_overwrite_log(StudentNode *node, Student *student);
 StudentNode *delete_student_node(StudentNode *node, char *student_id);
 StudentNode *search_student_node(StudentNode *node, char *student_id);
 void print_student_ranks(StudentNode *node, Student *student);
@@ -80,20 +81,13 @@ typedef struct score_min_heap
     StudentScore *student_scores; // array of student scores
 } ScoreMinHeap;
 
-ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
-ScoreMinHeap *create_score_min_heap_k(ScoreMinHeap *heap, int k);
+ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, int k);
 ScoreMinHeap *insert_score_min_heap(ScoreMinHeap *heap, StudentScore *student_score);
 ScoreMinHeap *swap_score_min_heap_index(ScoreMinHeap *heap, int i, int j);
 void destroy_score_min_heap(ScoreMinHeap *heap);
-void heapify_score_min_heap(ScoreMinHeap *heap, int n, int i);
-void heapify_score_min_heap_general(ScoreMinHeap *heap, int i);
+void heapify_score_min_heap(ScoreMinHeap *heap, int i);
 void get_english_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_math_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_science_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
 void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node);
-void get_total_score_min_heap_k(ScoreMinHeap *heap, StudentNode *node);
-void print_score_min_heap_k(ScoreMinHeap *heap, int k); // k largest
 void print_score_min_heap(ScoreMinHeap *heap);
-
-void swap_student_score(StudentScore *a, StudentScore *b);
-void assign_student_score(StudentScore *a, StudentScore *b);

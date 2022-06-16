@@ -30,6 +30,53 @@ StudentNode *insert_student_node(StudentNode *node, Student *student)
     }
     else
     {
+        node->student = create_student(student->student_id, student->score.english, student->score.math, student->score.science);
+    }
+
+    node->height = 1 + max(get_height(node->left), get_height(node->right));
+
+    int balance = get_balance(node);
+    if (balance > 1 && strcmp(student->student_id, node->left->student->student_id) < 0)
+    {
+        return right_rotate(node);
+    }
+    if (balance < -1 && strcmp(student->student_id, node->right->student->student_id) > 0)
+    {
+        return left_rotate(node);
+    }
+    if (balance > 1 && strcmp(student->student_id, node->left->student->student_id) > 0)
+    {
+        node->left = left_rotate(node->left);
+        return right_rotate(node);
+    }
+    if (balance < -1 && strcmp(student->student_id, node->right->student->student_id) < 0)
+    {
+        node->right = right_rotate(node->right);
+        return left_rotate(node);
+    }
+
+    return node;
+}
+
+
+StudentNode *insert_student_node_with_overwrite_log(StudentNode *node, Student *student)
+{
+    if (node == NULL)
+    {
+        node = create_student_node(student);
+        return node;
+    }
+
+    if (strcmp(student->student_id, node->student->student_id) < 0)
+    {
+        node->left = insert_student_node(node->left, student);
+    }
+    else if (strcmp(student->student_id, node->student->student_id) > 0)
+    {
+        node->right = insert_student_node(node->right, student);
+    }
+    else
+    {
         printf("Student ID %s already exists.\n", student->student_id);
         printf("The score was: %.3f, %.3f, %.3f\n", node->student->score.english, node->student->score.english, node->student->score.english);
         printf("Overwriting existing data.\n");
@@ -433,23 +480,14 @@ void print_student_evaluate(StudentNode *node, Student *student)
     print_student_ranks(node, student);
 }
 
-ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
-{
-    heap = malloc(sizeof(ScoreMinHeap));
-    heap->size = get_size(node);
-    heap->index = 0;
-    heap->student_scores = (StudentScore *)malloc(sizeof(StudentScore) * heap->size);
-    return heap;
-}
-
-ScoreMinHeap *create_score_min_heap_k(ScoreMinHeap *heap, int k)
+ScoreMinHeap *create_score_min_heap(ScoreMinHeap *heap, int k)
 {
     heap = malloc(sizeof(ScoreMinHeap));
     heap->size = k;
     heap->index = 0;
     heap->student_scores = (StudentScore *)malloc(sizeof(StudentScore) * heap->size);
-    
-    for(int i = 0; i < heap->size; i++)
+
+    for (int i = 0; i < heap->size; i++)
     {
         heap->student_scores[i].score = INT_MIN;
         strcpy(heap->student_scores[i].student_id, "not found");
@@ -471,7 +509,7 @@ ScoreMinHeap *insert_score_min_heap(ScoreMinHeap *heap, StudentScore *student_sc
     }
     heap->student_scores[0].score = student_score->score;
     strcpy(heap->student_scores[0].student_id, student_score->student_id);
-    heapify_score_min_heap_general(heap, 0);
+    heapify_score_min_heap(heap, 0);
     return heap;
 }
 
@@ -483,39 +521,7 @@ ScoreMinHeap *swap_score_min_heap_index(ScoreMinHeap *heap, int i, int j)
     return heap;
 }
 
-void heapify_score_min_heap(ScoreMinHeap *heap, int k, int i)
-{
-    int smallest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-
-    if (left < k && heap->student_scores[left].score < heap->student_scores[smallest].score)
-    {
-        smallest = left;
-    }
-
-    if (right < k && heap->student_scores[right].score < heap->student_scores[smallest].score)
-    {
-        smallest = right;
-    }
-
-    if (smallest != i)
-    {
-        // swap_student_score(&heap->student_scores[i], &heap->student_scores[smallest]);
-        double temp;
-        char temp_id[11];
-        temp = heap->student_scores[smallest].score;
-        heap->student_scores[smallest].score = heap->student_scores[i].score;
-        heap->student_scores[i].score = temp;
-        strcpy(temp_id, heap->student_scores[smallest].student_id);
-        strcpy(heap->student_scores[smallest].student_id, heap->student_scores[i].student_id);
-        strcpy(heap->student_scores[i].student_id, temp_id);
-
-        heapify_score_min_heap(heap, k, smallest);
-    }
-}
-
-void heapify_score_min_heap_general(ScoreMinHeap *heap, int i)
+void heapify_score_min_heap(ScoreMinHeap *heap, int i)
 {
     int min_index = i;
     int left_child_index = 2 * i + 1;
@@ -534,7 +540,7 @@ void heapify_score_min_heap_general(ScoreMinHeap *heap, int i)
     if (i != min_index)
     {
         swap_score_min_heap_index(heap, i, min_index);
-        heapify_score_min_heap_general(heap, min_index);
+        heapify_score_min_heap(heap, min_index);
     }
 }
 
@@ -545,9 +551,12 @@ void get_english_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
         return;
     }
     get_english_score_min_heap(heap, node->left);
-    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
-    heap->student_scores[heap->index].score = node->student->score.english;
-    heap->index += 1;
+
+    StudentScore temp;
+    strcpy(temp.student_id, node->student->student_id);
+    temp.score = node->student->score.english;
+    heap = insert_score_min_heap(heap, &temp);
+
     get_english_score_min_heap(heap, node->right);
 }
 
@@ -558,9 +567,13 @@ void get_math_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
         return;
     }
     get_math_score_min_heap(heap, node->left);
-    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
-    heap->student_scores[heap->index].score = node->student->score.math;
-    heap->index += 1;
+
+    StudentScore temp;
+
+    strcpy(temp.student_id, node->student->student_id);
+    temp.score = node->student->score.math;
+    heap = insert_score_min_heap(heap, &temp);
+
     get_math_score_min_heap(heap, node->right);
 }
 
@@ -571,9 +584,13 @@ void get_science_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
         return;
     }
     get_science_score_min_heap(heap, node->left);
-    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
-    heap->student_scores[heap->index].score = node->student->score.science;
-    heap->index += 1;
+
+    StudentScore temp;
+    strcpy(temp.student_id, node->student->student_id);
+    temp.score = node->student->score.science;
+
+    heap = insert_score_min_heap(heap, &temp);
+
     get_science_score_min_heap(heap, node->right);
 }
 
@@ -584,19 +601,6 @@ void get_total_score_min_heap(ScoreMinHeap *heap, StudentNode *node)
         return;
     }
     get_total_score_min_heap(heap, node->left);
-    strcpy(heap->student_scores[heap->index].student_id, node->student->student_id);
-    heap->student_scores[heap->index].score = node->student->score.english + node->student->score.math + node->student->score.science;
-    heap->index += 1;
-    get_total_score_min_heap(heap, node->right);
-}
-
-void get_total_score_min_heap_k(ScoreMinHeap *heap, StudentNode *node)
-{
-    if (node == NULL)
-    {
-        return;
-    }
-    get_total_score_min_heap_k(heap, node->left);
 
     StudentScore temp;
     strcpy(temp.student_id, node->student->student_id);
@@ -604,42 +608,7 @@ void get_total_score_min_heap_k(ScoreMinHeap *heap, StudentNode *node)
 
     heap = insert_score_min_heap(heap, &temp);
 
-    get_total_score_min_heap_k(heap, node->right);
-}
-
-void print_score_min_heap_k(ScoreMinHeap *heap, int k)
-{
-    for (int i = (heap->size) / 2 - 1; i >= 0; i--)
-    {
-        heapify_score_min_heap(heap, heap->size, i);
-    }
-
-    for (int i = heap->size - 1; i >= 0; i--)
-    {
-        double temp;
-        char temp_id[11];
-        temp = heap->student_scores[0].score;
-        heap->student_scores[0].score = heap->student_scores[i].score;
-        heap->student_scores[i].score = temp;
-        strcpy(temp_id, heap->student_scores[0].student_id);
-        strcpy(heap->student_scores[0].student_id, heap->student_scores[i].student_id);
-        strcpy(heap->student_scores[i].student_id, temp_id);
-        heapify_score_min_heap(heap, i, 0);
-    }
-
-    // for (int i = k; i < heap->size; i++)
-    // {
-    //     if (heap->student_scores[0].score <= heap->student_scores[i].score)
-    //     {
-    //         heap->student_scores[0].score = heap->student_scores[i].score;
-    //         heapify_score_min_heap(heap, heap->size, 0);
-    //     }
-    // }
-
-    for (int i = 0; i < k; i++)
-    {
-        printf("%s %lf\n", heap->student_scores[i].student_id, heap->student_scores[i].score);
-    }
+    get_total_score_min_heap(heap, node->right);
 }
 
 void print_score_min_heap(ScoreMinHeap *heap)
@@ -648,17 +617,4 @@ void print_score_min_heap(ScoreMinHeap *heap)
     {
         printf("%s %lf\n", heap->student_scores[i].student_id, heap->student_scores[i].score);
     }
-}
-
-void swap_student_score(StudentScore *a, StudentScore *b)
-{
-    StudentScore *temp = a;
-    assign_student_score(a, b);
-    assign_student_score(b, temp);
-}
-
-void assign_student_score(StudentScore *a, StudentScore *b)
-{
-    a->score = b->score;
-    strcpy(a->student_id, b->student_id);
 }
