@@ -69,11 +69,11 @@ StudentNode *insert_student_node_with_overwrite_log(StudentNode *node, Student *
 
     if (strcmp(student->student_id, node->student->student_id) < 0)
     {
-        node->left = insert_student_node(node->left, student);
+        node->left = insert_student_node_with_overwrite_log(node->left, student);
     }
     else if (strcmp(student->student_id, node->student->student_id) > 0)
     {
-        node->right = insert_student_node(node->right, student);
+        node->right = insert_student_node_with_overwrite_log(node->right, student);
     }
     else
     {
@@ -112,6 +112,7 @@ StudentNode *delete_student_node(StudentNode *node, char *student_id)
 {
     if (node == NULL)
     {
+        printf("Student ID %s does not exist.\n", student_id);
         return node;
     }
 
@@ -181,6 +182,7 @@ StudentNode *search_student_node(StudentNode *node, char *student_id)
 {
     if (node == NULL)
     {
+        printf("Student ID %s does not exist.\n", student_id);
         return NULL;
     }
 
