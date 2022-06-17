@@ -210,6 +210,7 @@ void feature_search_top_ten_score_by_subject(StudentNode *student_node)
         get_science_score_min_heap(heap, student_node);
         break;
     }
+    printf("Since it is heap implementation, the top 10 students would not be in order.\n");
     print_score_min_heap(heap);
 
     destroy_score_min_heap(heap);
@@ -228,6 +229,7 @@ void feature_search_top_ten_score_by_total_score(StudentNode *student_node)
 
     ScoreMinHeap *heap = create_score_min_heap(heap, 10);
     get_total_score_min_heap(heap, student_node);
+    printf("Since it is heap implementation, the top 10 students would not be in order.\n");
     print_score_min_heap(heap);
 
     destroy_score_min_heap(heap);
